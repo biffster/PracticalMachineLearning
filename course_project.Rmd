@@ -1,0 +1,94 @@
+---
+title: "Practical machine learning - Course Project"
+author: "Michael Fierro"
+date: "July 2, 2016"
+output: html_document
+---
+
+```{r}
+library(knitr)
+library(caret)
+library(randomForest)
+library(e1071)
+```
+
+Import the data directly into dataframes using read.csv:
+```{r}
+#input_train_data <- read.csv(file="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", na.strings = "NA", stringsAsFactors = FALSE)
+#input_test_data <- read.csv(file="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", na.strings = "NA", stringsAsFactors = FALSE)
+input_train_data <- read.csv(file="pml-training.csv", na.strings = "NA", stringsAsFactors = FALSE)
+input_test_data <- read.csv(file="pml-testing.csv", na.strings = "NA", stringsAsFactors = FALSE)
+```
+
+Separate out the Training dataset into train and test (for cross-validation):
+
+```{r}
+set.seed(2048)
+inTrain <- createDataPartition(y=input_train_data$classe, p=0.7, list=F)
+training <- input_train_data[inTrain, ]
+validation <- input_train_data[-inTrain,]
+#training size so far:
+dim(training)
+#validation size so far
+dim(validation)
+```
+
+Clean up the data:
+```{r clean_up}
+# Remove nearZeroVar records
+nzw <- nearZeroVar(training)
+training <- training[, -nzw]
+validation <- validation[, -nzw]
+
+# Remove mostly empty variables:
+mostlyEmpty <- sapply(training, function(x) mean(is.na(x))) > 0.9
+training <- training[, mostlyEmpty==F]
+validation <- validation[, mostlyEmpty==F]
+#training size so far:
+dim(training)
+#validation size so far
+dim(validation)
+```
+
+There are a lot of variables in the dataframe that simply will not be useful for training. This happens to be the first five variables, which makes it easy to chop up the training and validation dataframes:
+
+```{r trim5}
+# The first 5 variables are not candidates for predictors:
+names(training[1:5])
+training <- training[, -(1:5)]
+validation <- validation[, -(1:5)]
+```
+
+Now it is time to pick a model. I want to try to reduce error as much as possible *and* I also have some spare processor cycles and time to use, so I'll use a five-fold cross validation - setting this in control:
+
+```{r control}
+fitControl <- trainControl(method="cv", number=5, verboseIter=F)
+```
+
+At this point, I build my training model using randomForest, fit on the training set:
+
+```{r dotrain}
+# fit the model
+fitted <- train(classe ~ ., data=training, method="rf", trControl=fitControl)
+
+# show just the result data:
+fitted$results
+```
+
+Test the model on the validation data:
+
+```{r validate_model}
+validationTest <- predict(fitted, newdata=validation)
+
+# Use confusionMatrix to show results:
+confusionMatrix(validation$classe, validationTest)
+
+```
+
+The reported accuracy rate of 99.86% is very high, and indicates that the model *should* be reliable for the actual testing data. The last step is to use the model on the actual testing data.
+
+```{r final_test}
+predict(fitted, newdata=input_test_data)
+```
+
+The automated grading system for Coursera identified all of these as the correct answers - as expected, this model works well for this assignment.
