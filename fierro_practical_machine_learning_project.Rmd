@@ -4,6 +4,9 @@ author: "Michael Fierro"
 date: "July 2, 2016"
 output: html_document
 ---
+# Synopsis
+This practice study is based off work done regarding Human Activity Recognition research by Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. Their paper on "Wearable Computing: Accelerometers’ Data
+Classification of Body Postures and Movements" relays the benefits of doing exercise correctly, and using activity/exercise trackers to provide feedback on whether an exercixe is being performed correctly. Ugulino, et al. provide the groundwork for such a project, and also recommend   The goal of this project is to create a model which can correctly predict the value 
 
 ```{r}
 library(knitr)
@@ -92,3 +95,6 @@ predict(fitted, newdata=input_test_data)
 ```
 
 The automated grading system for Coursera identified all of these as the correct answers - as expected, this model works well for this assignment.
+
+# Reference
+Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. **Wearable Computing: Accelerometers' Data Classification of Body Postures and Movements.** Proceedings of 21st Brazilian Symposium on Artificial Intelligence. Advances in Artificial Intelligence - SBIA 2012. In: Lecture Notes in Computer Science. , pp. 52-61. Curitiba, PR: Springer Berlin / Heidelberg, 2012. ISBN 978-3-642-34458-9. DOI: 10.1007/978-3-642-34459-6_6. 
