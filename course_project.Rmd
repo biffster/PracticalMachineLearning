@@ -1,1 +1,0 @@
-/home/biffster/Dropbox/Work/Training/Data science/Coursera/Practical Machine Learning/course_project.Rmd
