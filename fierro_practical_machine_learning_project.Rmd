@@ -1,12 +1,14 @@
 ---
-title: "Practical machine learning - Course Project"
+title: "Predicting exercise correctness using exercise trackers - machine learning course project"
 author: "Michael Fierro"
 date: "July 2, 2016"
 output: html_document
 ---
 # Synopsis
 This practice study is based off work done regarding Human Activity Recognition research by Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. Their paper on "Wearable Computing: Accelerometers’ Data
-Classification of Body Postures and Movements" relays the benefits of doing exercise correctly, and using activity/exercise trackers to provide feedback on whether an exercixe is being performed correctly. Ugulino, et al. provide the groundwork for such a project, and also recommend   The goal of this project is to create a model which can correctly predict the value 
+Classification of Body Postures and Movements" relays the benefits of doing exercise correctly, and using activity/exercise trackers to provide feedback on whether an exercixe is being performed correctly. Ugulino, et al. provide the groundwork for such a project, and also provide a dataset containing information from activity trackers from a number of individuals who were performing exercises either correctly or incorrectly. More information can be found in Ugulino, et al.'s paper.
+
+The goal of this project is to create a model which can predict whether an exercise was being performed correctly (optimally). The model will use a variety of predictors to try and predict the classe variable.
 
 ```{r}
 library(knitr)
@@ -15,15 +17,13 @@ library(randomForest)
 library(e1071)
 ```
 
-Import the data directly into dataframes using read.csv:
+Import the dataset directly from the proect website into dataframes using read.csv:
 ```{r}
-#input_train_data <- read.csv(file="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", na.strings = "NA", stringsAsFactors = FALSE)
-#input_test_data <- read.csv(file="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", na.strings = "NA", stringsAsFactors = FALSE)
-input_train_data <- read.csv(file="pml-training.csv", na.strings = "NA", stringsAsFactors = FALSE)
-input_test_data <- read.csv(file="pml-testing.csv", na.strings = "NA", stringsAsFactors = FALSE)
+input_train_data <- read.csv(file="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", na.strings = "NA", stringsAsFactors = FALSE)
+input_test_data <- read.csv(file="https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", na.strings = "NA", stringsAsFactors = FALSE)
 ```
 
-Separate out the Training dataset into train and test (for cross-validation):
+The first step in creating a model is to paritition the original input_training_data dataset into training and validation datasets (for cross-validation). The original testing dataset (input_test_data) will not be touched until it is time to use the model
 
 ```{r}
 set.seed(2048)
@@ -36,7 +36,8 @@ dim(training)
 dim(validation)
 ```
 
-Clean up the data:
+Now that we have datasets to work up with, we need to clean up the data: the following code block gets rid of near zero variance variables as well as variables that contain almost nothing but NAs.
+
 ```{r clean_up}
 # Remove nearZeroVar records
 nzw <- nearZeroVar(training)
@@ -88,13 +89,13 @@ confusionMatrix(validation$classe, validationTest)
 
 ```
 
-The reported accuracy rate of 99.86% is very high, and indicates that the model *should* be reliable for the actual testing data. The last step is to use the model on the actual testing data.
+The reported accuracy rate of 99.86% is very high, and indicates that the model *should* be reliable for the actual testing data. The last step is to use the model on the actual testing data. This provides the predictions for classe for the 20 entries in the testing dataset:
 
 ```{r final_test}
 predict(fitted, newdata=input_test_data)
 ```
 
-The automated grading system for Coursera identified all of these as the correct answers - as expected, this model works well for this assignment.
+Since this is a class project, the automated grading system for Coursera is used to provide answers for the correct classification for classe. The grading system identified my model's predictions above as the correct answers - as expected, this model works well for this assignment.
 
 # Reference
 Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. **Wearable Computing: Accelerometers' Data Classification of Body Postures and Movements.** Proceedings of 21st Brazilian Symposium on Artificial Intelligence. Advances in Artificial Intelligence - SBIA 2012. In: Lecture Notes in Computer Science. , pp. 52-61. Curitiba, PR: Springer Berlin / Heidelberg, 2012. ISBN 978-3-642-34458-9. DOI: 10.1007/978-3-642-34459-6_6. 
